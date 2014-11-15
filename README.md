@@ -21,8 +21,9 @@ Usage :
 6. To generate demography in g0v format : g0vDemo().  
    This script will automatically detect csv files in the same folder and processes all of them.  
    Please make sure there are only legitimite csv files in the same folder.  
-7. To generate tidy demography: regionDemo <- tidyDemo(regionDemoFileName).  
+7. To generate tidy demography: tidyDataSet <- tidyDemo(regionDemoFileName).  
    This function will return a data set for exploratory data analysis.  
+8. plotTidyDemo(tidyDataSet) will create a simply demography plot by ages and save it as png file.  
 
 Todo :   
 1. codebook.md  

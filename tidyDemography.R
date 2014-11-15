@@ -1,5 +1,6 @@
 library(tidyr)
 library(dplyr)
+library(ggplot2)
 
 tidyDemo <- function(file = NULL){
 	raw <- readLines(file, encoding="UTF-8")
@@ -34,7 +35,6 @@ tidyDemo <- function(file = NULL){
 	tidyAll[,c(1,4,5,6,7,8,10)] <- as.numeric(unlist(tidyAll[,c(1,4,5,6,7,8,10)]))
 	### tidyAll <- tidyAll[(!is.na(tidyAll$統計年月)),]
 	tidyVoter <- tidyAll[(tidyAll$年齡 >= 20),]
-
 	splitedChar <- ""
 	if(grepl("縣", tidyAll$區域別[1])){
 		splitedChar <- "縣"
@@ -55,32 +55,7 @@ tidyDemo <- function(file = NULL){
 		tidyVoterZone[(tidyVoterZone$年齡 == age & tidyVoterZone$性別 == "男"),]$人口 <- sum(ageSubSet)
 		ageSubSet <- tidyAll[(tidyAll$年齡 == age & tidyAll$性別 == "女"),]$population
 		tidyVoterZone[(tidyVoterZone$年齡 == age & tidyVoterZone$性別 == "女"),]$人口 <- sum(ageSubSet)
-	}
-	tidyVoterZone
-
-	# Exploratory example : 
-	# tidyVoterZoneMale <- tidyVoterZone[(tidyVoterZone$性別 == "男"),]
-	# tidyVoterZonefemale <- tidyVoterZone[(tidyVoterZone$性別 == "女"),]
-
-	# cumPopuplation <- cumsum(tidyVoterZoneMale$人口)
-	# sumPopulation <- sum((tidyVoterZoneMale$人口))
-	# halfMaleVoter <- tidyVoterZoneMale$年齡[length(cumPopuplation[(cumPopuplation <= sumPopulation*0.5)])]
-	# cumPopuplation <- cumsum(tidyVoterZonefemale$人口)
-	# sumPopulation <- sum((tidyVoterZonefemale$人口))
-	# halfFemaleVoter <- tidyVoterZonefemale$年齡[length(cumPopuplation[(cumPopuplation <= sumPopulation*0.5)])]
-	
-	# halfLabelMale <- paste("50%男性小於", halfMaleVoter, "歲", sep="")
-	# halfLabelFemale <- paste("50%女性小於", halfFemaleVoter, "歲", sep="")
-	# plotTitle <- paste(cityName, "投票人口年齡分布", sep="")
-
-	# png(file = "demographyLine.png", bg = "white", width = 720, height = 480)
-	# ggplot(tidyVoterZone, aes(x=年齡, y=人口)) + 
-	#     geom_line(aes(colour = 性別)) + 
-	#     labs(title=plotTitle) +
-	#     geom_vline(xintercept = c(halfMaleVoter, halfFemaleVoter)) + 
-	#     annotate("text", label = c(halfLabelMale, halfLabelFemale), x = c(56,56), y = c(5000,10000), size = 4, colour = "red")
-	# dev.off()
-	
+	}	
 	# outputDate <- as.character(raw5$統計年月[1])
 	# outputFileName <- raw5$區域別[1]
 	# splitedChar <- ""
@@ -92,6 +67,35 @@ tidyDemo <- function(file = NULL){
 	# cityName <- unlist(strsplit(outputFileName, "市|縣", fixed = FALSE))[1]
 	# fileName <- paste(outputDate, cityName, splitedChar, "人口資料tidy.csv", sep="")
 	# write.csv(tidyVoterZone, file = fileName, row.names=FALSE, fileEncoding="UTF-8")
+	tidyVoterZone
+}
+
+plotTidyDemo <- function(tidyDataSet = NULL){
+	# Exploratory example : 
+	tidyVoterZoneMale <- tidyDataSet[(tidyDataSet$性別 == "男"),]
+	tidyVoterZonefemale <- tidyDataSet[(tidyDataSet$性別 == "女"),]
+
+	cumPopuplation <- cumsum(tidyVoterZoneMale$人口)
+	sumPopulation <- sum((tidyVoterZoneMale$人口))
+	halfMaleVoter <- tidyVoterZoneMale$年齡[length(cumPopuplation[(cumPopuplation <= sumPopulation*0.5)])]
+	cumPopuplation <- cumsum(tidyVoterZonefemale$人口)
+	sumPopulation <- sum((tidyVoterZonefemale$人口))
+	halfFemaleVoter <- tidyVoterZonefemale$年齡[length(cumPopuplation[(cumPopuplation <= sumPopulation*0.5)])]
+
+	cityName <- as.character(tidyDataSet$區域別[1])
+	
+	halfLabelMale <- paste("50%男性小於", halfMaleVoter, "歲", sep="")
+	halfLabelFemale <- paste("50%女性小於", halfFemaleVoter, "歲", sep="")
+	plotTitle <- paste(cityName, "投票人口年齡分布", sep="")
+	fileName <- paste(plotTitle, ".png", sep="")
+	png(file = fileName, bg = "white", width = 720, height = 480)
+	p <- ggplot(tidyDataSet, aes(x=年齡, y=人口)) + 
+	    geom_line(aes(colour = 性別)) + 
+	    labs(title=plotTitle) +
+	    geom_vline(xintercept = c(halfMaleVoter, halfFemaleVoter)) + 
+	    annotate("text", label = c(halfLabelMale, halfLabelFemale), x = c(56,56), y = c(5000,10000), size = 4, colour = "red")
+	print(p)
+	dev.off()
 }
 
 g0vDemo <- function(){
